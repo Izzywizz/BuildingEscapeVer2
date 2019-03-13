@@ -9,21 +9,22 @@ UPositionReport::UPositionReport()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
 	// ...
 }
 
 
-// Called when the game starts
+// Called when the game starts like start in unity
 void UPositionReport::BeginPlay()
 {
 	Super::BeginPlay();
-
+ 
 	// ...
 	
 }
 
 
-// Called every frame
+// Called every frame bit like update on unity
 void UPositionReport::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

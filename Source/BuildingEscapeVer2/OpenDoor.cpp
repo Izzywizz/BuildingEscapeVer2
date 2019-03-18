@@ -26,7 +26,7 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	// ...We've searched top down through the world for the playercontroller and the pawn attached to it
 	ActorThatopens = GetWorld()->GetFirstPlayerController()->GetPawn(); //remember that although it returns a PAWM, a PAWN IS-A inherits from an Actor
 }
 
@@ -36,7 +36,7 @@ void UOpenDoor::OpenDoor()
 	AActor *Owner = GetOwner();
 
 	//set the rotation angle using rotator
-	FRotator NewRotation = FRotator(0.0f, -60.0f, 0.0f);
+	FRotator NewRotation = FRotator(0.0f, -90.0f, 0.0f);
 
 	//Set the door angle using rotator
 	Owner->SetActorRotation(NewRotation);

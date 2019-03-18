@@ -20,9 +20,11 @@ void UPositionReport::BeginPlay()
 	Super::BeginPlay();
 	// ...
 	FString ObjectName = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("Position Report reporting duty on %s!"), *ObjectName);
+	FString ActorLocation = GetOwner()->GetActorLocation().ToString();
+	FString ObjectPos = ("Position: %s", ActorLocation);
 
-}
+	UE_LOG(LogTemp, Warning, TEXT("%s is at %s"), *ObjectName, *ObjectPos);
+ }
 
 
 // Called every frame bit like update on unity

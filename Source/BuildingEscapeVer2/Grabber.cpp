@@ -63,8 +63,28 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		0.0f, 
 		10.0f
 	);
-	// Ray casting  laser out to reach distance
+	/// Line-trace(Ray casting)  laser out to reach distance
+	//The idea for picking up objects is we have is to filter by Object Channel filtering for collisions, 
+	// so we can only interact with Physics bodies which is its Object Type (objs we set as having physic simulated and have mass will tag it as Physics Bodies)
+	
+	/// Setup querry parameters
+	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner()); //we ignore ourselevs and we don't do a complex collision visbiility, ignore tag for now
+	FHitResult Hit;
 
-	// See what we hit
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT Hit,
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParameters
+	);
+
+	AActor* ActorHit = Hit.GetActor();
+	if (ActorHit)
+	{
+		FString Name = ActorHit->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Line trace hit:: %s"), *Name);
+	}
+	/// See what we hit
 }
 

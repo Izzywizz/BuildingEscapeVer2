@@ -28,23 +28,26 @@ void UOpenDoor::BeginPlay()
 
 	// ...We've searched top down through the world for the playercontroller and the pawn attached to it
 	ActorThatopens = GetWorld()->GetFirstPlayerController()->GetPawn(); //remember that although it returns a PAWM, a PAWN IS-A inherits from an Actor
+	
+																		//find the owner
+	Owner = GetOwner();
+
 }
 
 void UOpenDoor::OpenDoor()
 {
-	//find the owner
-	AActor *Owner = GetOwner();
-
-	//set the rotation angle using rotator
-	FRotator NewRotation = FRotator(0.0f, -90.0f, 0.0f);
-
-	//Set the door angle using rotator
-	Owner->SetActorRotation(NewRotation);
+	Owner->SetActorRotation(FRotator(0.0f, OpenAngle, 0.0f));
 
 	//Print out current rotation
 	FRotator Rotation = Owner->GetActorRotation();
 	UE_LOG(LogTemp, Warning, TEXT("Door's Rotation is %s"), *Rotation.ToString());
 }
+
+void UOpenDoor::CloseDoor()
+{
+	Owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+}
+
 
 
 // Called every frame
@@ -52,13 +55,21 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ... Poll the Trigger volume every frame means asking every frame to see if comeone enetesr
+	// ... Poll the Trigger volume every frame means asking every frame to see if someone can enter
+	// if the actorThatOpens is in the volume
+	// then we call Opendoor
 	if (PressurePlate && PressurePlate->IsOverlappingActor(ActorThatopens))
 	{
 		OpenDoor();
+		//lets take a note the last time the door was open
+		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
 	}
-	// if the actorThatOpens is in the volume
-	// then we call Opendoor
 
+	//check if it's time to close the door
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (CurrentTime - LastDoorOpenTime > DoorCloseDelay)
+	{
+		CloseDoor();
+	}
 }
 

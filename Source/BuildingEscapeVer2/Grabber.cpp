@@ -30,6 +30,8 @@ void UGrabber::BeginPlay()
 
 	/// Look for attached Physics Handle
 	PhyicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+
 	if (PhyicsHandle)
 	{
 		// Physics handle is found
@@ -39,6 +41,22 @@ void UGrabber::BeginPlay()
 	{
 		FString name = GetOwner()->GetName();
 		UE_LOG(LogTemp, Error, TEXT("Physics Handler Not found within %s "), *name);
+	}
+
+	/// Look for attached Input componet
+	if (InputComponent)
+	{
+		//Found Input component
+		UE_LOG(LogTemp, Warning, TEXT("Input component found"));
+		/// Bind the input axis
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		//So we are providing the address of the grab method which is located in THIS component/obj hence the this 
+		//and when either of the keys that are mapped to the Grab(string) action from within the editor/Input settings which are PRESSED (IE_Pressed)
+
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Input component Not found within %s "), *GetOwner()->GetName());
 	}
 }
 
@@ -99,5 +117,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		UE_LOG(LogTemp, Warning, TEXT("Line trace hit:: %s"), *Name);
 	}
 	/// See what we hit
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Keys have been pressed!"));
 }
 

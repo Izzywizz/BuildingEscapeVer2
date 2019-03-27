@@ -53,6 +53,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//This takes the intial location of where the player is (relative to the origin [0,0,0]) + 
 	//Direction of where the player has rotated thier head * (multiplied) by the reach of where we want to grab 
 	//(we multiply it by the reach because the roatated vector is normailsed to one)
+
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotator.Vector() * Reach);
 	DrawDebugLine(GetWorld(), 
 		PlayerViewPointLocation, 

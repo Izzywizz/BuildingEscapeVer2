@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h" //UPhysicsHandleComponent
 #include "Grabber.generated.h"
 
 
@@ -27,5 +28,7 @@ public:
 private:
 	//how far ahead of the player we can reach in cm
 	float Reach = 100.0f;
+
+	UPhysicsHandleComponent* PhyicsHandle = nullptr;
 		
 };

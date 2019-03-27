@@ -53,6 +53,8 @@ void UGrabber::BeginPlay()
 		//So we are providing the address of the grab method which is located in THIS component/obj hence the this 
 		//and when either of the keys that are mapped to the Grab(string) action from within the editor/Input settings which are PRESSED (IE_Pressed)
 
+		//release key press
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
 	}
 	else
 	{
@@ -122,5 +124,10 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Keys have been pressed!"));
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Keys Released!"));
 }
 

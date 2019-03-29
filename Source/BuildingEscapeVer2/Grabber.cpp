@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Runtime/Engine/Classes/Components/PrimitiveComponent.h"
 #include "Engine/Public/DrawDebugHelpers.h"
 
 #define OUT //a macro that does absolutely nothing, it substitues nothing in, 
@@ -29,9 +31,9 @@ void UGrabber::BeginPlay()
 // Look for attached Physics Handle
 void UGrabber::FindPhysicsHandleComponent()
 {
-	PhyicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 
-	if (PhyicsHandle)
+	if (PhysicsHandle)
 	{
 		// Physics handle is found
 		UE_LOG(LogTemp, Warning, TEXT("Physics Handler Found!"));
@@ -71,7 +73,20 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// if the physics handle is attached
+	if (PhysicsHandle->GrabbedComponent)
+	{
 		// move the object we're holding
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotator;
+
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+			OUT PlayerViewPointLocation, //this method bc of out parameter changes the parameters directly within the method
+			OUT PlayerViewPointRotator
+		);
+
+		FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotator.Vector() * Reach);
+		PhysicsHandle->SetTargetLocation(LineTraceEnd); // we set the targets location to the end of the reach line
+	}
 
 }
 
@@ -139,15 +154,24 @@ void UGrabber::Grab()
 	UE_LOG(LogTemp, Warning, TEXT("Grab Keys have been pressed!"));
 
 	/// LINE TRACE  and see if we reach any actors with physics body collision channel set
-	GetFirstPhysicsBodyInReach();
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	auto ComponentToGrab = HitResult.GetComponent();
+	auto ActorHit = HitResult.GetActor();
+
 	/// If we hit something then attach a physics handle
-	// TODO attach physics handle
+	if (ActorHit)
+	{
+		// TODO attach physics handle
+		//PhysicsHandle->GrabComponentAtLocation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation());
+		PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, ComponentToGrab->GetOwner()->GetActorLocation(), FRotator(0.0f, 0.0f, 0.0f));
+	}
+
 }
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grab Keys Released!"));
-
+	UE_LOG(LogTemp, Warning, TEXT("Grab Keys Released! Drop object"));
+	PhysicsHandle->ReleaseComponent();
 	// TODO release physics handle
 }
 

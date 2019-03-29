@@ -15,22 +15,21 @@ UGrabber::UGrabber()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
-
 
 // Called when the game starts
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
+	FindPhysicsHandleComponent();
+	SetupInputComponent();
+	
+}
 
-	// ...
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty!"));
-
-	/// Look for attached Physics Handle
+// Look for attached Physics Handle
+void UGrabber::FindPhysicsHandleComponent()
+{
 	PhyicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	if (PhyicsHandle)
 	{
@@ -42,8 +41,12 @@ void UGrabber::BeginPlay()
 		FString name = GetOwner()->GetName();
 		UE_LOG(LogTemp, Error, TEXT("Physics Handler Not found within %s "), *name);
 	}
+}
 
-	/// Look for attached Input componet
+// Look for attached Input componet
+void UGrabber::SetupInputComponent()
+{
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
 		//Found Input component
@@ -62,12 +65,19 @@ void UGrabber::BeginPlay()
 	}
 }
 
-
 // Called every frame
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// if the physics handle is attached
+		// move the object we're holding
+
+}
+
+// Creates A line Trace/ Ray cast Hit object that indicates what Physics object is infront of the user, ie Chair or table 
+FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
+{
 	// Get the player's viewpoint this frame/tick: where they are, where are they looking
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotator;
@@ -87,19 +97,20 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//(we multiply it by the reach because the roatated vector is normailsed to one)
 
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotator.Vector() * Reach);
-	DrawDebugLine(GetWorld(), 
-		PlayerViewPointLocation, 
-		LineTraceEnd, 
-		FColor(255, 0, 0), 
-		false, 
-		0.0f, 
-		0.0f, 
+	//Drawing red line (explanation above)
+	/*DrawDebugLine(GetWorld(),
+		PlayerViewPointLocation,
+		LineTraceEnd,
+		FColor(255, 0, 0),
+		false,
+		0.0f,
+		0.0f,
 		10.0f
-	);
+	);*/
 	/// Line-trace(Ray casting)  laser out to reach distance
 	//The idea for picking up objects is we have is to filter by Object Channel filtering for collisions, 
 	// so we can only interact with Physics bodies which is its Object Type (objs we set as having physic simulated and have mass will tag it as Physics Bodies)
-	
+
 	/// Setup querry parameters
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner()); //we ignore ourselevs and we don't do a complex collision visbiility, ignore tag for now
 	FHitResult Hit;
@@ -119,15 +130,24 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		UE_LOG(LogTemp, Warning, TEXT("Line trace hit:: %s"), *Name);
 	}
 	/// See what we hit
+
+	return Hit;
 }
 
 void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Keys have been pressed!"));
+
+	/// LINE TRACE  and see if we reach any actors with physics body collision channel set
+	GetFirstPhysicsBodyInReach();
+	/// If we hit something then attach a physics handle
+	// TODO attach physics handle
 }
 
 void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab Keys Released!"));
+
+	// TODO release physics handle
 }
 

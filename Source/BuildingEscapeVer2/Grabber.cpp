@@ -39,6 +39,7 @@ FTwoVectors UGrabber::GetLineTracePoints() const
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
+
 	FindPhysicsHandleComponent();
 	SetupInputComponent();
 	
@@ -47,18 +48,15 @@ void UGrabber::BeginPlay()
 // Look for attached Physics Handle
 void UGrabber::FindPhysicsHandleComponent()
 {
+	if (!PhysicsHandle) { return; } //prevents nullptr exceptions
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-
-	if (PhysicsHandle == nullptr)
-	{
-		FString name = GetOwner()->GetName();
-		UE_LOG(LogTemp, Error, TEXT("Physics Handler Not found within %s "), *name);
-	}
 }
 
 // Look for attached Input componet
 void UGrabber::SetupInputComponent()
 {
+	if (!InputComponent) { return; } //prevents nullptr exceptions
+
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
@@ -83,6 +81,9 @@ void UGrabber::SetupInputComponent()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!PhysicsHandle) { return; } //prevents nullptr exceptions
+	if (!InputComponent) { return; } //prevents nullptr exceptions
 
 	// if the physics handle is attached
 	if (PhysicsHandle->GrabbedComponent)
@@ -148,6 +149,8 @@ void UGrabber::Grab()
 	auto ComponentToGrab = HitResult.GetComponent(); //Why a component not an actor? explanation here: https://community.gamedev.tv/t/warning-dumb-question-why-are-we-hitting-the-component/76351/2
 	auto ActorHit = HitResult.GetActor();
 
+	if (!PhysicsHandle) { return; } //prevents nullptr exceptions
+
 	/// If we hit something then attach a physics handle
 	if (ActorHit)
 	{
@@ -163,6 +166,8 @@ void UGrabber::Grab()
 
 void UGrabber::Release()
 {
+	if (!PhysicsHandle) { return; } //prevents nullptr exceptions
+
 	UE_LOG(LogTemp, Warning, TEXT("Grab Keys Released! Drop object"));
 	PhysicsHandle->ReleaseComponent();
 	// TODO release physics handle

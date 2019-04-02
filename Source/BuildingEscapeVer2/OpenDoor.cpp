@@ -37,21 +37,6 @@ void UOpenDoor::BeginPlay()
 
 }
 
-void UOpenDoor::OpenDoor()
-{
-	//Owner->SetActorRotation(FRotator(0.0f, OpenAngle, 0.0f));
-	OnOpenRequest.Broadcast();
-	//Print out current rotation
-	FRotator Rotation = Owner->GetActorRotation();
-	UE_LOG(LogTemp, Warning, TEXT("Door's Rotation is %s"), *Rotation.ToString());
-}
-
-void UOpenDoor::CloseDoor()
-{
-	Owner->SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
-}
-
-
 
 // Called every frame
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -60,18 +45,13 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	// ... Poll the Trigger volume every frame means asking every frame to see if someone can enter
 
-	if (GetTotalMassOfActorsOnPlate() > 30.0f) // TODO make into parameter that is exposesd in the editor.
+	if (GetTotalMassOfActorsOnPlate() > TriggerMass) // TODO make into parameter that is exposesd in the editor.
 	{
-		OpenDoor();
-		//lets take a note the last time the door was open
-		LastDoorOpenTime = GetWorld()->GetTimeSeconds();
+		OnOpen.Broadcast();
 	}
-
-	//check if it's time to close the door
-	float CurrentTime = GetWorld()->GetTimeSeconds();
-	if (CurrentTime - LastDoorOpenTime > DoorCloseDelay)
+	else
 	{
-		CloseDoor();
+		OnClose.Broadcast();
 	}
 }
 

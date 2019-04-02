@@ -42,20 +42,17 @@ void UGrabber::BeginPlay()
 
 	FindPhysicsHandleComponent();
 	SetupInputComponent();
-	
 }
 
 // Look for attached Physics Handle
 void UGrabber::FindPhysicsHandleComponent()
 {
-	if (!PhysicsHandle) { return; } //prevents nullptr exceptions
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 }
 
 // Look for attached Input componet
 void UGrabber::SetupInputComponent()
 {
-	if (!InputComponent) { return; } //prevents nullptr exceptions
 
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)

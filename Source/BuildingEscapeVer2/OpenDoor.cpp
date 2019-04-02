@@ -39,8 +39,8 @@ void UOpenDoor::BeginPlay()
 
 void UOpenDoor::OpenDoor()
 {
-	Owner->SetActorRotation(FRotator(0.0f, OpenAngle, 0.0f));
-
+	//Owner->SetActorRotation(FRotator(0.0f, OpenAngle, 0.0f));
+	OnOpenRequest.Broadcast();
 	//Print out current rotation
 	FRotator Rotation = Owner->GetActorRotation();
 	UE_LOG(LogTemp, Warning, TEXT("Door's Rotation is %s"), *Rotation.ToString());
